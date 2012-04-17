@@ -1,0 +1,6 @@
+name = "features_menu"
+core = "7.x"
+package = "Features"
+dependencies[] = "features"
+dependencies[] = "menu"
+features[menu_custom][] = "menu-livre-d-or"

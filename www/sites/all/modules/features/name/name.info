@@ -1,0 +1,8 @@
+name = "name"
+description = "name"
+core = "7.x"
+package = "Features"
+dependencies[] = "features"
+dependencies[] = "features_menu"
+dependencies[] = "menu"
+features[menu_links][] = "menu-livre-d-or:node/26"

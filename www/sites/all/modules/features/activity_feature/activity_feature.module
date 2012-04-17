@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the activity_feature feature.
+ */
+
+include_once 'activity_feature.features.inc';
