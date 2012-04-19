@@ -1,0 +1,25 @@
+#slideshow-wrapper{
+width:100%;
+background: transparent url(images/slideshow-shadow.gif) no-repeat center bottom;
+height:270px;
+margin-bottom:-45px;
+margin-top:14px;
+}
+
+.slideshow-inner{
+width:950px;
+margin:0 auto;
+height:205px;
+position:relative;
+z-index:1;
+overflow: hidden;
+}
+
+.slideshow {
+width:950px;
+height:205px;
+position:relative;
+z-index:2;
+overflow: hidden;
+}
+

@@ -80,9 +80,12 @@
 <?php if ($page['highlighted']) : ?><div id="slideshow-bottom">
 <div id="mission"><?php print render ($page['highlighted']); ?></div></div><?php endif; ?>
 <div class="slideshow">
-<img src="<?php print $base_path . $directory; ?>/images/slideshows/sea.jpg" width="950" height="355" alt="slideshow 1"/>
-<img src="<?php print $base_path . $directory; ?>/images/slideshows/noon.jpg" width="950" height="355" alt="slideshow 2"/>
-<img src="<?php print $base_path . $directory; ?>/images/slideshows/snow.jpg" width="950" height="355" alt="slideshow 3"/>
+<img src="<?php print $base_path . $directory; ?>/images/slideshows/sea.jpg" width="950" height="205" alt="slideshow 1"/>
+<img src="<?php print $base_path . $directory; ?>/images/slideshows/noon.jpg" width="950" height="205" alt="slideshow 2"/>
+<img src="<?php print $base_path . $directory; ?>/images/slideshows/snow.jpg" width="950" height="205" alt="slideshow 3"/>
+<img src="<?php print $base_path . $directory; ?>/images/slideshows/img1.jpg" width="950" height="205" alt="slideshow 4"/>
+<img src="<?php print $base_path . $directory; ?>/images/slideshows/img2.jpg" width="950" height="205" alt="slideshow 5"/>
+<img src="<?php print $base_path . $directory; ?>/images/slideshows/img3.jpg" width="950" height="205" alt="slideshow 6"/>
 </div>
 </div>
 </div>
