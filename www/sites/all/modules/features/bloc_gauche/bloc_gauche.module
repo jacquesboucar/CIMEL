@@ -1,6 +1,7 @@
 <?php
 /**
  * @file
+ * Code for the bloc_gauche feature.
  */
 
-// Drupal needs this blank file.
+include_once 'bloc_gauche.features.inc';
