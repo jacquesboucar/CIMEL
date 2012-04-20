@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the visite_content feature.
+ */
+
+include_once 'visite_content.features.inc';

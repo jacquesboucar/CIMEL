@@ -1,0 +1,29 @@
+<?php
+/**
+ * @file
+ * visite_content.features.inc
+ */
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function visite_content_ctools_plugin_api() {
+  return array("version" => "1");
+}
+
+/**
+ * Implements hook_node_info().
+ */
+function visite_content_node_info() {
+  $items = array(
+    'visite' => array(
+      'name' => t('Visite'),
+      'base' => 'node_content',
+      'description' => '',
+      'has_title' => '1',
+      'title_label' => t('Title'),
+      'help' => '',
+    ),
+  );
+  return $items;
+}
