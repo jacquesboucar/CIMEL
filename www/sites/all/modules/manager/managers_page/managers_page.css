@@ -1,0 +1,37 @@
+#managers-page li {
+  position: relative;
+}
+#managers-page .admin-list li .icon {
+  display: block;
+  height: 30px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 30px;
+}
+#managers-page .extra-links {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+#managers-page li:hover .extra-links {
+  display: block;
+}
+#content #managers-page .extra-links ul li {
+  border: 0;
+  float: left;
+  margin: 0 0 0 1em;
+  padding: 0;
+}
+#managers-page .extra-links li a {
+  display: block;
+  line-height: 15px;
+  padding-left: 20px;
+}
+#managers-page .add a {
+  background: url(managers_page.png) 0 0 no-repeat;
+}
+#managers-page .manage a {
+  background: url(managers_page.png) 0 -30px no-repeat;
+}

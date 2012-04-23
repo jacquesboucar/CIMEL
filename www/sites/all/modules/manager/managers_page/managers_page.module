@@ -1,0 +1,360 @@
+<?php
+
+/**
+ * @file
+ * Manager's Page main functions.
+ *
+ * @author Franz Glauber Vanderlinde
+ */
+
+/**
+ * Basically loads enough data for calling .css files.
+ * This is necessary on init since the menu is rendered on footer, and you can't add css at that
+ * point.
+ *
+ * Implements hook_init().
+ */
+function managers_page_init() {
+  global $manager_content_types;
+
+  if (user_access('access managers page')) {
+    // Get enabled content types
+    if (!isset($manager_content_types)) {
+      $manager_content_types = manager_get_types();
+    }
+
+    // Add the CSS
+    foreach ($manager_content_types as $typek => $type) {
+      $css_file = manager_get_css($type->type);
+      drupal_add_css($css_file);
+    }
+
+    // Add last CSS
+    $manager_css = drupal_get_path('module', 'manager') . '/manager.css';
+    $managers_page_css = drupal_get_path('module', 'managers_page') . '/managers_page.css';
+    drupal_add_css($manager_css);
+    drupal_add_css($managers_page_css);
+
+    // And finally add the JS
+    //$managers_page_js = drupal_get_path('module', 'managers_page') . '/managers_page.js';
+    //drupal_add_js($managers_page_js);
+
+
+    //Set the Manager's theme. Based on http://www.drupal.org/project/admin module
+    /*
+     $managers_theme = variable_get('managers_theme', 'slate');
+
+     // Initialize the slate theme.
+     // Bypass the theme system entirely so we can load our own theme into place.
+     if (strpos($_GET['q'], 'node/add') === 0 ||
+     strpos($_GET['q'], 'manage/content/add') === 0 ||
+     (arg(0) == 'node' && arg(2) == 'edit')) {
+     _manager_init_theme();
+     }
+     else if (arg(0) == 'manage' && ($managers_theme == 'slate' || empty($managers_theme))) {
+     if (strpos($_GET['q'], 'manage/build/block') === 0) {
+     if (in_array(arg(3), array('configure', 'delete', 'add'), TRUE)) {
+     _manager_init_theme();
+     }
+     }
+     else {
+     _manager_init_theme();
+     }
+     }
+     else if (function_exists('manager_theme_init') && $GLOBALS['custom_theme'] == 'slate') {
+     _manager_init_theme();
+     }*/
+  }
+}
+
+/**
+ * Implements hook_managers_style().
+ */
+function managers_page_manager_style() {
+  $style = array(
+    'rules' => array('#managers-page .admin-list li.manager-node-%TYPE .icon'),
+  );
+  return $style;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function managers_page_permission() {
+  return array(
+    'access managers page' => array(
+      'title' => t("Access Manager's Page"),
+      'description' => t("Administrative page reworked for content managers"),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ * The greatest importance, since it copies all interesting entries from admin to form the interface.
+ */
+function managers_page_menu() {
+  $items = array();
+  /* $items['manage'] = array(
+   'title' => 'Manage',
+   'page callback' => 'managers_page_page',
+   'access arguments' => array('access managers page'),
+   'type' => MENU_NORMAL_ITEM,
+   );*/
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter() 
+ */
+function managers_page_menu_alter(&$items) {
+  $items['admin'] = array(
+    'title' => 'Manage',
+    'access arguments' => array('access managers page'),
+    'page callback' => 'managers_page_main_admin_page',
+    'weight' => 9,
+    'file' => 'managers_page.admin.inc',
+    'file path' => drupal_get_path('module', 'managers_page'),
+  );
+}
+
+/**
+ * Prepares items to be displayed on page
+ */
+function managers_page_get_items($item) {
+  global $manager_content_types;
+
+  //Content
+  //TODO: Check permissions
+  switch ($item) {
+    case 'content':
+      $items = array();
+      foreach ($manager_content_types as $name => $type) {
+        $type_url_str = str_replace('_', '-', $type->type);
+        $items[$name] = array(
+          'title' => $type->name,
+          'description' => $type->description,
+        );
+        if (node_access('create', $name)) {
+          $items[$name]['add'] = 'node/add/' . $type_url_str;
+        }
+        if (node_access('update', $name)) {
+          $items[$name]['manage'] = 'admin/content/node/' . $type_url_str;
+        }
+      }
+      $items['comment'] = array(
+        'title' => t('Comments'),
+        'description' => t('All comments posted on site.'),
+        'manage' => 'admin/content/comment',
+      );
+      return $items;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function managers_page_theme($existing, $type, $theme, $path) {
+  return array(
+    'managers_page' => array(
+      'variables' => array('parts' => NULL),
+    ),
+    'managers_page_item' => array(
+      'variables' => array('name' => NULL, 'type' => NULL, 'content' => NULL),
+    ),
+    'managers_page_link' => array(
+      'variables' => array('title' => NULL, 'path' => NULL, 'context' => NULL),
+    ),
+    'managers_page_block_content' => array(
+      'variables' => array('content' => NULL, 'get_runstate' => FALSE),
+      'file' => 'managers_page.admin.inc',
+    ),
+  );
+}
+
+/**
+ * Renders the page HTML Code
+ * @param
+ *   $parts: Array containing parts to be rendered as arrays (content, confs, reports, admin)
+ * TODO: Check permission to edit content
+ * NOT USING THIS, TO BE REMOVED
+ */
+function theme_managers_page($variables) {
+  $parts = $variables['parts'];
+  $output = '';
+  if (is_array($parts) && !empty($parts)) {
+    $left_area = '';
+    $content = '';
+    // Render the Content Management Panel
+    if (isset($parts['content'])) {
+      foreach ($parts['content'] as $name => $type) {
+        $content .= theme('managers_page_item', array('name' => $name, 'type' => $type, 'content' => TRUE));
+      }
+      if (!empty($content)) {
+        $content = '<ul id="manager-page-content-list">' . $content . '</ul>';
+        $content = '<div class="manager-page-panel"><h3>' . t('Site\'s Content') .
+		   '</h3><div class="body"><p class="description">' .
+		   t('Manage the site\'s dynamic content') . '</p>' . $content . '</div></div>';
+      }
+    }
+    $left_area .= $content;
+
+    // Render the Reports Panel
+    $content = '';
+    if (isset($parts['reports'])) {
+      $content = '';
+      foreach ($parts['reports'] as $name => $item) {
+        $content .= theme('managers_page_item', array('name' => $name, 'type' => $item));
+      }
+      if (!empty($content)) {
+        $content = '<ul id="manager-page-reports-list">' . $content . '</ul>';
+        $content = '<div class="manager-page-panel"><h3>' . t('Site\'s Reports') .
+		   '</h3><div class="body"><p class="description">' .
+		   t('View the site\'s reports') . '</p>' . $content . '</div></div>';
+      }
+    }
+    $left_area .= $content;
+
+    // Render the Left Column (Content + Reports)
+    if (!empty($left_area)) {
+      $left_area = '<div class="left clear-block">' . $left_area . '</div>';
+    }
+
+    $right_area = '';
+
+    // Render the Configurations panel
+
+    // Render the Administration panel
+
+    // Render the Right Colummn
+
+    // Render the Page
+
+    $output = '<div id="manage" class="clear-block">' . $left_area . $right_area . '</div>';
+  }
+  return $output;
+}
+
+/**
+ * Renders the menu bar items HTML
+ *
+ * @param
+ *   $name - machine-name of item
+ *   $item - array with item data
+ *   $content - if true, item to be rendered is a content type
+ *
+ * NOT USING THIS. TO BE REMOVED!
+ */
+function theme_managers_page_item($variables) {
+  $name = $variables['name'];
+  $item = $variables['type'];
+  $content = $variables['content'];
+  // TODO Number of parameters in this theme funcion does not match number of parameters found in hook_theme.
+  if ($content && !empty($name)) {
+    // Renders a Content Type Item
+    if (is_array($item)) {
+      $info = '';
+      $info .= isset($item['title']) ? '<h3 class="title">' . $item['title'] . '</h3>' : '';
+      $info .= isset($item['description']) ? '<div class="description">' . $item['description'] . '</div>' : '';
+      $info = !empty($info) ? '<div class="info"><span class="icon"></span>' . $info . '</div>' : '';
+
+      $links = '';
+      if ($name != 'comment' && user_access('create ' . $name . ' content')) {
+        $links .= l('Add', 'node/add/' . $name, array('attributes' => array('class' => 'add')));
+      }
+      if ($name == 'comment' || user_access('edit any ' . $name . ' content')) {
+        $links .= $manage ? l('Manage', 'manage/content/' . $name, array('attributes' => array('class' => 'manage'))) : '';
+        if (system_admin_compact_mode()) {
+          $link = $manage ? l($name, 'manage/content/' . $name, array('attributes' => array('class' => 'manage'))) : '';
+        }
+      }
+      $item = !empty($links) ? '<li class="item" id="managers-page-content-' . $name . '">' . $info . '<div class="links">' . $links . '</div></li>' : '';
+      return $item;
+    }
+  }
+  if (!empty($name) && is_array($item)) {
+    $info = '';
+    $info .= isset($item['title']) ? '<h3 class="title">' . l($item['title'], 'manage/' . $name) . '</h3>' : '';
+    $info .= isset($item['description']) ? '<div class="description">' . $item['description'] . '</div>' : '';
+    $info = !empty($info) ? '<div class="info"><span class="icon"></span>' . $info . '</div>' : '';
+
+    $item = '<li class="item" id="managers-page-content-' . $name . '">' . $info . '</li>';
+    return $item;
+  }
+  return '';
+}
+
+
+/**
+ * Rebuild theme
+ * Based on Admin module's
+ */
+function _manager_theme_rebuild($force = FALSE) {
+  static $exists;
+  if (!isset($exists) && arg(0) == 'manage') {
+    $exists = db_query("SELECT count(*) FROM {system} WHERE name = :name AND type = :type", array(':name' => 'slatem', ':type' => 'theme'))->fetchField();
+    $force = !$exists ? TRUE : $force;
+  }
+  if ($force || variable_get('manager_theme_invalidated', FALSE)) {
+    $path = drupal_get_path('module', 'managers_page') . '/theme';
+
+    $theme = new StdClass();
+    $theme->name = 'slatem';
+    $theme->filename = "{$path}/slatem.info";
+    $theme->engine = 'phptemplate';
+    $theme->owner = drupal_get_path('theme_engine', 'phptemplate') . '/phptemplate.engine';
+    $theme->info = system_theme_default();
+    $theme->info['name'] = 'Slate M';
+
+    db_delete('system')
+  ->condition('name', 'slatem')
+  ->condition('type', 'theme')
+  ->execute();
+    $id = db_insert('system')
+  ->fields(array(
+    'name' => $theme->name,
+    'owner' => $theme->owner,
+    'info' => serialize($theme->info),
+    'type' => 'theme',
+    'filename' => $theme->filename,
+    'status' => isset($theme->status) ? $theme->status : 0,
+    'throttle' => 0,
+    'bootstrap' => 0,
+  ))
+  ->execute();
+
+    variable_set('manager_theme_invalidated', FALSE);
+  }
+}
+
+/**
+ * Initialize the managers "theme".
+ * Based on Admin's module
+ */
+function _manager_init_theme() {
+  global $theme, $theme_key;
+  //if (empty($theme)) {
+  _manager_theme_rebuild();
+
+  $theme = $theme_key = 'slatem';
+
+  $path = drupal_get_path('module', 'managers_page') . '/theme';
+
+  $theme_info = new StdClass();
+  $theme_info->name = 'slatem';
+  $theme_info->filename = "{$path}/slatem.info";
+  $theme_info->engine = 'phptemplate';
+  $theme_info->owner = drupal_get_path('theme_engine', 'phptemplate') . '/phptemplate.engine';
+
+  $theme_info->stylesheets = array();
+  //$theme_info->stylesheets['screen'][] = "{$path}/reset.css";
+  //$theme_info->stylesheets['screen'][] = "{$path}/style.css";
+
+  $theme_info->scripts = array();
+  $theme_info->scripts[] = "{$path}/theme.js";
+
+  _init_theme($theme_info);
+  return TRUE;
+  //}
+}
+

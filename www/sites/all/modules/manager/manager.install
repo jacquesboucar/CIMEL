@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * Manager Module Installation file
+ */
+
+/**
+ * Implements hook_install().
+ */
+function manager_install() {
+  //manager_clear_css();
+}
+
+/**
+ * Requirement: our directory
+ */
+function manager_requirement() {
+  $requirements = array();
+  if ($phase == 'runtime') {
+    $path = file_create_path('manager');
+    if (!file_prepare_directory($path)) {
+      $path = file_directory_path() . '/manager';
+      file_prepare_directory($path, FILE_CREATE_DIRECTORY);
+    }
+
+    $requirements['manager_css_cache'] = array(
+      'title' => t("Manager's CSS Cache"),
+      'severity' => REQUIREMENT_OK,
+      'value' => t('Exists'),
+    );
+
+    if (!file_prepare_directory($path)) {
+      $requirements['manager_css_cache']['description'] = t('The Manager\'s CSS cache directory, %path could not be created due to a misconfigured files directory. Please ensure that the files directory is correctly configured and that the webserver has permission to create directories.', array('%path' => $path));
+      $requirements['manager_css_cache']['severity'] = REQUIREMENT_ERROR;
+      $requirements['manager_css_cache']['value'] = t('Unable to create');
+    }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Implements hook_uninstall().
+ * @todo list all variables
+ */
+function manager_uninstall() {
+  variable_del('manager_types');
+}

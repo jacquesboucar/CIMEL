@@ -1,0 +1,48 @@
+
+Manager 6.x-1.x-dev
+==============
+Adding RTL support
+
+Manager 6.x-1.0-rc3
+==============
+Fixed a bug related to access to node types.
+Improved CSS Generation. Now we have the hook hook_manager_style() that returns an array with CSS selector to be used for each submodule. See include/style.inc
+Maybe we don't need to touch the background position
+bug report #670868 by zsanmartin: font-weight: normal needed.
+bug report #656502 by franz: Style broken when using admin compact mode on Manager's Page.
+Sorting CSS attributes alphabetically
+Correcting bugs related underscores in content types
+
+Manager 6.x-1.0-rc2
+==============
+Making submenus more wider to look better with many items.
+feature request #651638 by zsanmartin,franz: Option to assign menu under 'Manage' button of Manager's Bar
+
+Manager 6.x-1.0-rc1
+==============
+Now the bar appears when you have 'admin menu' permisson but not in the /admin section
+Adjusting CSS to meet CSS coding standards.
+Now Content block on Manager's page show the original missing items
+Adding CVS ID placeholder for css files
+Adjusting to fit Coding Standards. Passed 100% on coder's minor level
+
+Manager 6.x-1.0-beta5
+==============
+Major bug fixed on Managers Page. Now other blocks are showing, and with adequate icons from Admin
+
+Manager 6.x-1.0-beta4
+==============
+bug report #656276 by franz: Content types access checks reworked.
+Fixed #656246: When no bar is to be rendered, there is a gap on the top.
+bug report #656256: Bar doesn't show if no content type is enabled.
+Reworked view permissions
+Removing 'Add'/'Manage' from bar links, should be intuitive
+Better permission checking on managers_bar
+bug report #640368 by zsanmartin,franz: Content-type links now replaces underscores with hyphens.
+bug report #637028 from datenrettung,franz: call to module function from .install removed
+License information on README.TXT
+
+
+Manager 6.x-1.0
+==============
+Created project

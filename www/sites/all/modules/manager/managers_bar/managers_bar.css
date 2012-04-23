@@ -1,0 +1,111 @@
+
+#managers-bar {
+  background: transparent url(managers_bar.png) 0 -50px repeat-x;
+  color: #fff;
+  font: 11px "Lucida Grande", Verdana, sans-serif;
+  height: 50px;
+  left: 0;
+  margin: 0;
+  padding: 0 0 10px;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 150;
+}
+#managers-bar ul,
+#managers-bar ul li {
+  margin: 0;
+  padding: 0;
+}
+#managers-bar #managers-bar-content {
+  padding: 5px 10px;
+}
+#managers-bar li {
+  background: none;
+  float: left;
+  list-style-image: none;
+  list-style-type: none;
+  position: relative;
+}
+#managers-bar li a {
+  border-radius: 5px;
+  color: #fff;
+  display: block;
+  font-weight: normal;
+  line-height: 30px;
+  margin-right: 5px;
+  padding: 5px 10px;
+  text-decoration: none;
+  -webkit-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+#managers-bar li a .icon {
+  background: transparent url(managers_bar.png) 0 -110px no-repeat;
+  display: block;
+  float: left;
+  height: 30px;
+  margin-right: 5px;
+  width: 30px;
+}
+#managers-bar li .managers-bar-content-item:hover,
+#managers-bar li:hover .managers-bar-content-item {
+  background-color: #333;
+}
+#managers-bar li .node-add .icon { background-position: 0 -140px; }
+#managers-bar li .admin-content-node .icon { background-position: 0 -170px; }
+#managers-bar li .admin .icon,
+#managers-bar li .manage .icon { background-position: 0 -200px; }
+
+#managers-bar li div {
+  display: none;
+  left: 0;
+  padding-top: 5px;
+  position: absolute;
+  top: 40px;
+  width: 400px;
+  z-index: 60;
+}
+#managers-bar li:focus div,
+#managers-bar li:hover div {
+  display: block;
+}
+#managers-bar ul ul {
+  background-color: #fff;
+  border: 4px solid #7f7f7f;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  box-shadow: #333 5px 5px 10px;
+  margin-left: -4px;
+  overflow: hidden;
+  -webkit-border-bottom-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -khtml-border-bottom-right-radius: 5px;
+  -khtml-border-bottom-left-radius: 5px;
+  -moz-border-radius-bottomright: 5px;
+  -moz-border-radius-bottomleft: 5px;
+  -webkit-box-shadow: #333 5px 5px 10px;
+  -khtml-box-shadow: #333 5px 5px 10px;
+  -moz-box-shadow: #333 5px 5px 10px;
+}
+#managers-bar ul ul li {
+  display: block;
+  float: left;
+  width: 50%;
+}
+#managers-bar ul ul a {
+  border-top: 1px solid #ddd;
+  color: #000;
+  display: block;
+}
+#managers-bar ul ul li:nth-child(1) a,
+#managers-bar ul ul li:nth-child(2) a {
+  border-top: 0;
+}
+#managers-bar ul ul a:hover {
+  color: #888;
+}
+
+#managers-bar .managers-bar-logout {
+  float: right;
+}

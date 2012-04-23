@@ -1,0 +1,304 @@
+<?php
+
+/**
+ * @file
+ * Manager's Bar main functions.
+ *
+ * @author Franz Glauber Vanderlinde
+ */
+
+/**
+ * Basically loads enough data for calling .css files.
+ * This is necessary on init since the menu is rendered on footer, and you can't add css at that
+ * point.
+ *
+ * Implements hook_init().
+ */
+function managers_bar_init() {
+  global $manager_content_types;
+
+  if (managers_bar_access()) {
+    // Get enabled content types
+    $manager_content_types = manager_get_types();
+
+    // Add CSS
+    $manager_css = drupal_get_path('module', 'manager') . '/manager.css';
+    $managers_bar_css = drupal_get_path('module', 'managers_bar') . '/managers_bar.css';
+    drupal_add_css($manager_css);
+    drupal_add_css($managers_bar_css);
+
+    // Add last CSS
+    foreach ($manager_content_types as $typek => $type) {
+      $css_file = manager_get_css($type->type);
+      drupal_add_css($css_file);
+    }
+
+    // And finally add the JS
+    $managers_bar_js = drupal_get_path('module', 'managers_bar') . '/managers_bar.js';
+    drupal_add_js($managers_bar_js);
+  }
+}
+
+/**
+ * Implements hook_managers_style().
+ */
+function managers_bar_manager_style() {
+  $style = array(
+    'rules' => array(
+      '#managers-bar li .node-add-%TYPE .icon',
+      '#managers-bar li .admin-content-node-%TYPE .icon',
+    ),
+  );
+  return $style;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function managers_bar_permission() {
+  return array(
+    'access managers bar' => array(
+      'title' => t("Access Manager's Bar"),
+    ),
+  );
+}
+
+/**
+ * Implements hook_footer().
+ *
+ * Display the Menu bar.
+ * TODO: Check permissions for administering each node type
+ */
+function managers_bar_footer() {
+  global $manager_content_types;
+  if (managers_bar_access()) {
+    return theme('managers_bar', array('types' => $manager_content_types));
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function managers_bar_menu() {
+
+  $items = array();
+  /*
+   $items['admin/config/managers_bar'] = array(
+   'title'            => t('Dumper settings'),
+   'description'      => t('Configure database managers_bar.'),
+   'page callback'    => 'drupal_get_form',
+   'page arguments'   => array('managers_bar_admin'),
+   'access arguments' => array('dump sql data'),
+   'type'             => MENU_NORMAL_ITEM,
+   );
+
+   $items['admin/structure/managers_bar'] = array(
+   'title'            => t('Dump DB'),
+   'description'      => t('Download database dump.'),
+   'page callback'    => 'drupal_get_form',
+   'page arguments'   => array('managers_bar_form'),
+   'access arguments' => array('dump sql data'),
+   'type'             => MENU_NORMAL_ITEM,
+   );
+   */
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function managers_bar_theme($existing, $type, $theme, $path) {
+  return array(
+    'managers_bar' => array(
+      'variables' => array('types' => NULL),
+    ),
+    'managers_bar_item' => array(
+      'variables' => array('type' => NULL, 'action' => 'add', 'comment' => NULL),
+    ),
+    'managers_bar_link' => array(
+      'variables' => array('title' => NULL, 'path' => NULL, 'context' => 'managers-bar', array()),
+    ),
+  );
+}
+
+/**
+ * Settings for Manager's Bar
+ */
+function managers_bar_settings() {
+  $form = array();
+  $options = menu_get_menus();
+  $options[0] = t('<< No Menu >>');
+  $form['managers_bar_menu'] = array(
+    '#title' => t('Manager\'s Bar Menu'),
+    '#description' => t('Menu to show when the mouse goes over the Manage button'),
+    '#type' => 'select',
+    '#default_value' => array(variable_get('managers_bar_menu', 0)),
+    '#options' => $options,
+  );
+  // Development menu
+  if (module_exists('devel')) {
+    $form['managers_bar_devel'] = array(
+      '#title' => t('Activate Development menu'),
+      '#description' => t('Usefull menu by the Devel module'),
+      '#type' => 'checkbox',
+      '#default_value' => array(variable_get('managers_bar_devel', TRUE)),
+    );
+  }
+  return $form;
+}
+
+/**
+ * Checks for access to the Manager's bar
+ */
+function managers_bar_access() {
+  if(user_access('access managers bar') && 
+	    ( !user_access('admin menu') || 
+        (user_access('admin menu') && !module_exists('admin')) || 
+        (user_access('admin menu') && arg(0) != 'admin')
+      )) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * Renders the menu bar HTML Code
+ * TODO: Manage page
+ * TODO: Check permission to edit comments
+ */
+function theme_managers_bar($variables) {
+  $types = $variables['types'];
+  $output = '';
+  if (is_array($types)) {
+    $menu_add = $menu_edit = $menu = $li_add = $li_edit = '';
+    foreach ($types as $typek => $type) {
+      $menu_add .= theme('managers_bar_item', array('type' => $type, 'comment' => 'add'));
+      $menu_edit .= theme('managers_bar_item', array('type' => $type, 'comment' => 'edit'));
+    }
+
+    if ($menu_name = variable_get('managers_bar_menu', 0)) {
+      $menu = menu_tree_all_data($menu_name);
+      foreach ($menu as $k => $item) {
+        unset($menu[$k]['below']);
+      }
+      $menu = menu_tree_output($menu);
+    }
+
+    $link_add = theme('managers_bar_link', array('title' => t('Create content'), 'path' => 'node/add'));
+    if (!empty($menu_add)) {
+      $li_add .= '<li id="managers-bar-add">';
+      $li_add .= $link_add;
+      $li_add .= '<div id="managers-bar-add-content"><ul>';
+      $li_add .= $menu_add;
+      $li_add .= '</ul></div></li>';
+    }
+    $menu_add = $li_add;
+
+    if (user_access('administer comments') || !empty($menu_edit)) {
+      $li_edit .= '<li id="managers-bar-edit">';
+      $li_edit .= theme('managers_bar_link', array('title' => t('Edit content'), 'path' => 'admin/content/node'));
+      $li_edit .= '<div id="managers-bar-edit-content"><ul>';
+      $li_edit .= $menu_edit;
+      // Adding comments link
+      $li_edit .= theme('managers_bar_item', array('action' => 'edit', 'comment' => TRUE));
+      $li_edit .= '</ul></div></li>';
+    }
+    $menu_edit = $li_edit;
+
+    if (user_access('access administration pages') ||
+        (user_access('access managers page') && module_exists('managers_page'))) {
+      $manage_link = theme('managers_bar_link', array('title' => t('Manage'), 'path' => 'admin'));
+      $menu_manage = '<li class="managers-bar-manage">' . $manage_link;
+      $menu_manage .= !empty($menu) ? '<div id="managers-bar-manage-content">' . $menu . '</div></li>' : '</li>';
+    }
+
+    if (module_exists('devel') && user_access('access devel information') &&
+      variable_get('managers_bar_devel', TRUE)) {
+      $menu = menu_tree_all_data('devel');
+      foreach ($menu as $k => $item) {
+        unset($menu[$k]['below']);
+      }
+      $menu = menu_tree_output($menu);
+      $devel_link = theme('managers_bar_link', array('title' => t('Development'), 'path' => ''));
+      $menu_devel = '<li class="managers-bar-devel">' . $devel_link;
+      $menu_devel .= !empty($menu) ? '<div id="managers-bar-devel">' . $menu . '</div></li>' : '</li>';
+    }
+
+    $logout = '<li class="managers-bar-logout">' . theme('managers_bar_link', array('title' => t('Logout'), 'path' => 'logout')) . '</li>';
+
+    $output .= $menu_add . $menu_edit . $menu_manage . $menu_devel . $logout;
+  }
+  if (!empty($output)) {
+    $output = '<div id="managers-bar" class="manager"><ul id="managers-bar-content">' . $output . '</ul></div>';
+  }
+
+  return $output;
+}
+
+/**
+ * Renders the menu bar items HTML
+ *
+ * @param
+ *   $type - node type
+ *   $action - can be 'add' or 'edit'
+ *   $comment - if true, will ignore other arguments and render a "Manage Comments" link
+ */
+function theme_managers_bar_item($variables) {
+  $type = $variables['type'];
+  $action = $variables['action'];
+  $comment = $variables['comment'];
+
+  if ($comment && user_access('administer comments')) {
+    $link = theme('managers_bar_link', array('title' => t('Manage comments'), 'path' => 'admin/content/comment', 'context' => 'managers-bar-edit'));
+    return '<li id="managers-bar-edit-comment" class="manager-comment">' . $link . '</li>';
+  }
+  if (isset($type->type)) {
+    if ($action == 'add' && node_access('create', $type->type)) {
+      $type_url_str = str_replace('_', '-', $type->type);
+      $link = theme('managers_bar_link', array(
+        'title' => t('@type', array('@type' => $type->name)), 
+        'path' => 'node/add/' . $type_url_str, 
+        'context' => 'managers-bar-' . $action, 
+        'attributes' => array('class' => 'manager-node-' . $type->type),
+      ));
+      return '<li class="content-type-' . $type->type . ' manager-node-' . $type->type . '">' . $link . '</li>';
+    }
+    if ($action == 'edit' && user_access('edit any ' .  $type->type . ' content')) {
+      $link = theme('managers_bar_link', array(
+        'title' => t('@type', array('@type' => $type->name)), 
+        'path' => 'admin/content/node/' . $type->type, 
+        'context' => 'managers-bar-' . $action, 
+        'attributes' => array('class' => 'manager-node-' . $type->type),
+      ));
+      return '<li class="content-type-' . $type->type . ' manager-node-' . $type->type . '">' . $link . '</li>';
+    }
+  }
+  return '';
+}
+
+/**
+ * Renders the menu bar links
+ *
+ * @param
+ *   $title - the link title
+ *   $path - the link path, the same used in l() function
+ *   $context - if it is a sublink, this indicates the id of the parent menu
+ */
+function theme_managers_bar_link($variables) {
+  $title = $variables['title'];
+  $path = $variables['path'];
+  $context = $variables['context'];
+  $attributes = $variables['attributes'];
+  if ($attributes['class']) {
+    $classes = $attributes['class'] . ' ';
+  }
+  $id = str_replace('/', '-', $path);
+  $link = l('<span class="icon"></span>' . $title, $path, array(
+    'html' => 1,
+    'attributes' => array(
+      'class' => $classes . $context . '-content-item ' . $id,
+    ),
+  ));
+
+  return $link;
+}

@@ -1,0 +1,326 @@
+<?php
+
+/**
+ * @file
+ * File for main functions of Manager's UI
+ *
+ * @author Franz Glauber Vanderlinde
+ */
+
+include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'manager') . '/includes/manager.views_default.inc';
+
+/**
+ * Implements hook_init() 
+ */
+function manager_init() {
+  /* if (!user_access('access administration pages')) {
+   $arg = arg();
+   if ($arg[0] == 'admin') {
+   $arg[0] = 'manage';
+   $path = implode('/', $arg);
+   drupal_goto($path);
+   }
+   } */
+}
+/**
+ * Implements hook_permission().
+ */
+function manager_permission() {
+  return array(
+    'administer manager interface' => array(
+      'title' => t("Administer Manager's Interface"),
+      'description' => t("Administration of general settings for Manager.")
+    ),
+  );
+}
+
+/**
+ * Callback for settings
+ */
+function manager_settings($form, &$form_state) {
+  $form = array();
+
+  if (module_exists('managers_bar')) {
+    $form += managers_bar_settings();
+  }
+
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function manager_menu() {
+  $items = array();
+
+  $items['admin/config/user-interface/manager'] = array(
+    'title' => t('Manager Settings'),
+    'description' => t('Adjust Manager settings'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('manager_settings'),
+    'access arguments' => array('administer manager interface'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  /*
+   //Comments:
+   $items['manage/content/comment'] = array(
+   'title' => 'Comments',
+   'description' => 'List and edit site comments and the comment moderation queue.',
+   'page callback' => 'comment_admin',
+   'access arguments' => array('administer comments'),
+   'file' => 'comment.admin.inc',
+   'file path' => drupal_get_path('module', 'comment'),
+   'type' => MENU_CALLBACK,
+   );
+
+   // Tabs:
+   $items['manage/content/comment/new'] = array(
+   'title' => 'Published comments',
+   'type' => MENU_DEFAULT_LOCAL_TASK,
+   'weight' => -10,
+   );
+   $items['manage/content/comment/approval'] = array(
+   'title' => 'Approval queue',
+   'page arguments' => array('approval'),
+   'access arguments' => array('administer comments'),
+   'type' => MENU_LOCAL_TASK,
+   'file' => 'comment.admin.inc',
+   'file path' => drupal_get_path('module', 'comment'),
+   );
+
+   //Reports
+   $items['manage/reports'] = array(
+   'title' => 'Reports',
+   'description' => 'View reports from system logs and other status information.',
+   'weight' => 5,
+   'position' => 'left',
+   );
+   $items['manage/reports/dblog'] = array(
+   'title' => 'Recent log entries',
+   'description' => 'View events that have recently been logged.',
+   'page callback' => 'dblog_overview',
+   'access arguments' => array('access site reports'),
+   'weight' => -1,
+   'file' => 'dblog.admin.inc',
+   'file path' => drupal_get_path('module', 'dblog'),
+   );
+   $items['manage/reports/page-not-found'] = array(
+   'title' => "Top 'page not found' errors",
+   'description' => "View 'page not found' errors (404s).",
+   'page callback' => 'dblog_top',
+   'page arguments' => array('page not found'),
+   'access arguments' => array('access site reports'),
+   'file' => 'dblog.admin.inc',
+   'file path' => drupal_get_path('module', 'dblog'),
+   );
+   $items['manage/reports/access-denied'] = array(
+   'title' => "Top 'access denied' errors",
+   'description' => "View 'access denied' errors (403s).",
+   'page callback' => 'dblog_top',
+   'page arguments' => array('access denied'),
+   'access arguments' => array('access site reports'),
+   'file' => 'dblog.admin.inc',
+   'file path' => drupal_get_path('module', 'dblog'),
+   );
+   $items['manage/reports/event/%'] = array(
+   'title' => 'Details',
+   'page callback' => 'dblog_event',
+   'page arguments' => array(3),
+   'access arguments' => array('access site reports'),
+   'type' => MENU_CALLBACK,
+   'file' => 'dblog.admin.inc',
+   'file path' => drupal_get_path('module', 'dblog'),
+   );
+   $items['manage/reports/status'] = array(
+   'title' => 'Status report',
+   'description' => "Get a status report about your site's operation and any detected problems.",
+   'page callback' => 'system_status',
+   'weight' => 10,
+   'access arguments' => array('administer site configuration'),
+   'file' => 'system.admin.inc',
+   'file path' => drupal_get_path('module', 'system'),
+   );
+   $items['manage/reports/status/run-cron'] = array(
+   'title' => 'Run cron',
+   'page callback' => 'system_run_cron',
+   'access arguments' => array('administer site configuration'),
+   'type' => MENU_CALLBACK,
+   'file' => 'system.admin.inc',
+   'file path' => drupal_get_path('module', 'system'),
+   );
+   $items['manage/reports/status/php'] = array(
+   'title' => 'PHP',
+   'page callback' => 'system_php',
+   'access arguments' => array('administer site configuration'),
+   'type' => MENU_CALLBACK,
+   'file' => 'system.admin.inc',
+   'file path' => drupal_get_path('module', 'system'),
+   );
+   $items['manage/reports/status/sql'] = array(
+   'title' => 'SQL',
+   'page callback' => 'system_sql',
+   'access arguments' => array('administer site configuration'),
+   'type' => MENU_CALLBACK,
+   'file' => 'system.admin.inc',
+   'file path' => drupal_get_path('module', 'system'),
+   );
+   */
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function manager_menu_alter(&$items) { }
+
+/**
+ * Wrap up the comment administration to direct it to the right interface
+ * i.e: admin/ or manage/
+ */
+/*
+ function manager_comment_menu_wrapper() {
+ $arg = arg(3);
+ if (user_access('access administration pages')) {
+ module_load_include('inc', 'comment', 'comment.admin');
+ if (isset($arg) && $arg == 'approval') {
+ $args = array('approval');
+ }
+ return comment_admin($args);
+ }
+ drupal_goto('manage/content/comment');
+ }*/
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Alter the content type form to add the manager options
+ */
+function manager_form_alter(&$form, $form_state, $form_id) {
+
+  if ($form_id == 'node_type_form' &&
+      user_access('administer manager interface')) {
+    $types = variable_get('manager_types', array());
+    $type = $form['#node_type']->type;
+    if (!empty($type)) {
+      $default_value = isset($types[$type]) ? $types[$type] : FALSE;
+    }
+
+    $form['manager_type_toogle'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Appear in Manager module UI'),
+      '#description' => t('Check this option if you want this Content Type to show on Manager\'s Interface'),
+      '#default_value' => $default_value,
+    );
+
+    $form['#validate'][] = 'manager_node_type_form_validate';
+
+    return $form;
+  }
+}
+
+/**
+ * Process the content type form and save the variable
+ */
+function manager_node_type_form_validate($form, &$form_state) {
+  if (user_access('administer manager interface')) {
+    $types = variable_get('manager_types', array());
+    $types[trim($form_state['values']['type'])] = $form_state['values']['manager_type_toogle'];
+    variable_set('manager_types', $types);
+  }
+
+  // Unsets the form field so it don't get saved by node_type_form_submit()
+  unset($form_state['values']['manager_type_toogle']);
+}
+
+/**
+ * Get the types configured to show on Manager's UI
+ *
+ * @return
+ *   An array of content_types to be used in the UI.
+ */
+function manager_get_types() {
+  static $types;
+
+  if (!isset($types)) {
+    $m_types = variable_get('manager_types', array());
+    $all_types = node_type_get_types();
+    foreach ($all_types as $typek => $type) {
+      if (isset($m_types[$typek]) && $m_types[$typek] ) {
+        $types[$typek] = $type;
+      }
+    }
+  }
+
+  if (!isset($types)) {
+    $types = array();
+  }
+  return $types;
+}
+
+/**
+ * Retrieve content type .css filename and create one if still doesn't exist
+ * the bgimage pattern is files/manager/content-type-%type.png
+ *
+ * @param $type
+ *   The content type. Filename will be files/manager/content-type-%type.css
+ */
+function manager_get_css($type) {
+  $type = str_replace('_', '-', $type);
+
+  $path = file_create_path('manager');
+  if (!file_prepare_directory($path, TRUE)) {
+    $path = file_directory_path() . '/manager';
+  }
+
+  $filename = $path . '/content-type-' . $type;
+
+  if (is_file($filename . '.css')) {
+    return $filename . '.css';
+  }
+
+  module_load_include('inc', 'manager', 'includes/style');
+  $content = manager_style();
+
+  $content = preg_replace('/%TYPE/', $type, $content);
+  $content = preg_replace('/%URL/', base_path() . $filename . '.png', $content);
+
+  if (file_exists($filename . '.png')) {
+    $filename .= '.css';
+    if (!file_save_data($content, $filename, FILE_EXISTS_REPLACE)) {
+      drupal_set_message(t('Could not create file %filename!', array('%filename' => $filename)), 'error');
+    }
+  }
+
+  return $filename;
+}
+
+/**
+ * Clear CSS when "Clear cached data" Drupal form is submitted
+ */
+function manager_flush_caches() {
+  manager_clear_css();
+}
+
+/**
+ * Clear all automatically generated CSS Files
+ */
+function manager_clear_css() {
+  $types = node_type_get_types();
+
+  foreach ($types as $typek => $type) {
+    $typek = str_replace('_', '-', $typek);
+    $path = file_create_path('manager');
+    if (!file_prepare_directory($path, TRUE)) {
+      $path = file_directory_path() . '/manager';
+    }
+    $filename = $path . '/content-type-' . $typek . '.css';
+    if (file_delete($filename)) {
+      // we really need a message for this?
+      // drupal_set_message(t('File %filename successfully deleted!', array('%filename' => $filename)));
+    }
+    elseif (is_file($filename)) {
+      drupal_set_message(t('File %filename could not be deleted!', array('%filename' => $filename)), 'error');
+    }
+  }
+}

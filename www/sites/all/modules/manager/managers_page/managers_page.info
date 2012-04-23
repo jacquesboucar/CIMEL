@@ -1,0 +1,17 @@
+name = Manager's Page 
+description = Adds a nice manager-friendly page on /manage.
+core = 7.x
+package = Manager
+dependencies[] = manager
+dependencies[] = admin
+
+files[] = managers_page.admin.inc
+files[] = managers_page.install
+files[] = managers_page.module
+
+; Information added by drupal.org packaging script on 2011-11-05
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "manager"
+datestamp = "1320451937"
+
