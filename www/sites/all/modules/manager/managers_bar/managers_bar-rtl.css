@@ -1,0 +1,32 @@
+
+#managers-bar {
+  left: auto;
+  right: 0;
+}
+#managers-bar li {
+  float: right;
+}
+#managers-bar li a {
+  margin-left: 5px;
+  margin-right: 0;
+}
+#managers-bar li a .icon {
+  background: transparent url(managers_bar-rtl.png) 0 -110px no-repeat;
+  float: right;
+  margin-left: 5px;
+  margin-right: 0;
+}
+#managers-bar li div {
+  left: auto;
+  right: 0;
+}
+#managers-bar ul ul {
+  margin-left: 0;
+  margin-right: -4px;
+}
+#managers-bar ul ul li {
+  float: right;
+}
+#managers-bar .managers-bar-logout {
+  float: left;
+}

@@ -1,0 +1,15 @@
+/* Default content type icons */
+.manager .manager-node-page .icon,
+.manager .manager-node-story .icon,
+.manager .manager-comment .icon {
+  background: url(manager.png) 0 0 no-repeat !important;
+}
+.manager .manager-node-page .icon {
+  background-position: 0 -30px !important;
+}
+.manager .manager-node-story .icon {
+  background-position: 0 -60px !important;
+}
+.manager .manager-comment .icon {
+  background-position: 0 -90px !important;
+}

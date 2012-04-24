@@ -1,0 +1,17 @@
+name = Manager
+description = UI for manager-friendly managing.
+core = 7.x
+package = Manager
+dependencies[] = views_bulk_operations
+
+files[] = manager.install
+files[] = manager.module
+files[] = includes/manager.views_default.inc
+files[] = includes/style.inc
+
+; Information added by drupal.org packaging script on 2011-11-05
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "manager"
+datestamp = "1320451937"
+

@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Manager's Bar Module Installation file
+ */
+
+/**
+ * Implements hook_install().
+ */
+function managers_bar_install() {
+
+}
+
+
+/**
+ * Implements hook_uninstall().
+ * @todo list all variables
+ */
+function managers_bar_uninstall() {
+
+}

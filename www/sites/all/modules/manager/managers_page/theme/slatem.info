@@ -1,0 +1,23 @@
+name = "Slate M"
+description = "Slate M theme. Provided/managed by the manager module. Modified version of Admin module's Slate"
+version = "0.1"
+core = 7.x
+base theme = garland
+engine = "phptemplate"
+
+; stylesheets[screen][] = "reset.css"
+; stylesheets[print][] = "style.css"
+; stylesheets[screen][] = "ie6.css"
+
+stylesheets[all][] = "slatem.css"
+
+
+files[] = page.tpl.php
+files[] = template.php
+
+; Information added by drupal.org packaging script on 2011-11-05
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "manager"
+datestamp = "1320451937"
+

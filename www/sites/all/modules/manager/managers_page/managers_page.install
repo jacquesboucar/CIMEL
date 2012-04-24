@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Manager's Page Module Installation file
+ */
+
+/**
+ * Implements hook_install().
+ */
+function managers_page_install() {
+
+}
+
+
+/**
+ * Implements hook_uninstall().
+ * @todo list all variables
+ */
+function managers_page_uninstall() {
+
+}
