@@ -1,0 +1,7 @@
+name=CIMEL config modules 
+description = ¨A custom module¨
+dependencies = webform
+file[]= cimel_config.module
+core = 7.x
+version =7.x
+package = CIMEL

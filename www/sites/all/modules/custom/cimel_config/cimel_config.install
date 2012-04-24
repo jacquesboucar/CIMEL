@@ -1,0 +1,6 @@
+/* Disable user login block */
+
+function cimel_config_update_7050 (){
+  $result = db_query(
+    "UPDATE block SET status = 0 WHERE theme = 'dancimel' AND delta = 'login'");
+}
