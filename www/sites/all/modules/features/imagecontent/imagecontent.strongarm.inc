@@ -14,7 +14,7 @@ function imagecontent_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'comment_anonymous_image';
-  $strongarm->value = 0;
+  $strongarm->value = '0';
   $export['comment_anonymous_image'] = $strongarm;
 
   $strongarm = new stdClass;
@@ -71,7 +71,10 @@ function imagecontent_strongarm() {
   $strongarm->api_version = 1;
   $strongarm->name = 'menu_options_image';
   $strongarm->value = array(
-    0 => 'main-menu',
+    0 => 'menu-cimel-de-dahra',
+    1 => 'menu-cimel-de-makhana',
+    2 => 'menu-cimel-de-mbao',
+    3 => 'main-menu',
   );
   $export['menu_options_image'] = $strongarm;
 
@@ -102,7 +105,7 @@ function imagecontent_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'node_submitted_image';
-  $strongarm->value = 1;
+  $strongarm->value = 0;
   $export['node_submitted_image'] = $strongarm;
 
   return $export;
