@@ -17,7 +17,7 @@ function imagecontent_ctools_plugin_api() {
 function imagecontent_node_info() {
   $items = array(
     'image' => array(
-      'name' => t('image'),
+      'name' => t('image_galerie'),
       'base' => 'node_content',
       'description' => '',
       'has_title' => '1',
