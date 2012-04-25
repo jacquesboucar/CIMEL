@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the test_context feature.
- */
-
-include_once 'test_context.features.inc';

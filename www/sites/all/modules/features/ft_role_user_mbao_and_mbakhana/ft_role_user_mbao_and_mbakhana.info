@@ -1,6 +1,0 @@
-name = "ft role user mbao and mbakhana"
-core = "7.x"
-package = "Features"
-dependencies[] = "features"
-features[user_role][] = "gestion contenu makhana"
-features[user_role][] = "gestion contenu mbao"

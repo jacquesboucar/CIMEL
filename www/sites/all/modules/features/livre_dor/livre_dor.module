@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the livre_dor feature.
- */
-
-include_once 'livre_dor.features.inc';

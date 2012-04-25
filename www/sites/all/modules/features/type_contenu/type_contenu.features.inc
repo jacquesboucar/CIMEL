@@ -16,14 +16,6 @@ function type_contenu_ctools_plugin_api() {
  */
 function type_contenu_node_info() {
   $items = array(
-    'activit_s_en_cours' => array(
-      'name' => t('Activités en cours'),
-      'base' => 'node_content',
-      'description' => t('activités, projets en cours'),
-      'has_title' => '1',
-      'title_label' => t('Title'),
-      'help' => '',
-    ),
     'article' => array(
       'name' => t('Article'),
       'base' => 'node_content',
