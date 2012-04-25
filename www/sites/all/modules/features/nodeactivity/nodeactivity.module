@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the nodeactivity feature.
+ */
+
+include_once 'nodeactivity.features.inc';
