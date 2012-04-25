@@ -1,0 +1,8 @@
+name = "user_features"
+description = "taxonomie access control "
+core = "7.x"
+package = "Features"
+dependencies[] = "features"
+features[user_role][] = "gerer le contenu de makhana"
+features[user_role][] = "gestion du contenu de dahra"
+features[user_role][] = "manage content mbao"
